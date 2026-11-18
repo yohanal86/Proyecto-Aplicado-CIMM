@@ -54,6 +54,7 @@ NUM = ['TOTAL_APRENDICES_MATRICULADOS', 'DURACION_PLANEADA_DIAS', 'DIAS_EXPOSICI
 CAT = ['NIVEL_FORMACION', 'MODALIDAD_FORMACION']
 VARS = NUM + CAT
 X_all = df[VARS].copy()
+X_all[NUM] = X_all[NUM].astype(float)
 
 def preproc():
     return ColumnTransformer([('num', StandardScaler(), NUM),
@@ -260,11 +261,21 @@ def etapa_main():
             .to_csv(f'{SALIDA}/importancia_impureza_{nombre}.csv', index=False)
         try:
             import matplotlib; matplotlib.use('Agg'); import matplotlib.pyplot as plt
-            from sklearn.inspection import PartialDependenceDisplay
-            fig, ax = plt.subplots(2, 3, figsize=(14, 7))
-            PartialDependenceDisplay.from_estimator(gs.best_estimator_, X_all, VARS, categorical_features=CAT,
-                                                    response_method='predict_proba', ax=ax.ravel()[:5])
-            ax.ravel()[5].axis('off'); fig.suptitle(f'Dependencia parcial - {nombre}'); fig.tight_layout()
+            from sklearn.inspection import partial_dependence
+            fig, axs = plt.subplots(2, 3, figsize=(14, 7)); axs = axs.ravel()
+            for ax_, v in zip(axs, VARS):
+                r = partial_dependence(gs.best_estimator_, X_all, [v], kind='average',
+                                       response_method='predict_proba',
+                                       categorical_features=[v] if v in CAT else None)
+                valores = r.get('grid_values', r.get('values'))[0]
+                prom = np.asarray(r['average'])[0]
+                if v in CAT:
+                    ax_.bar([str(t) for t in valores], prom)
+                    ax_.tick_params(axis='x', rotation=30)
+                else:
+                    ax_.plot(valores, prom)
+                ax_.set_title(v, fontsize=9); ax_.set_ylabel('Probabilidad media predicha')
+            axs[5].axis('off'); fig.suptitle(f'Dependencia parcial - {nombre}'); fig.tight_layout()
             fig.savefig(f'{SALIDA}/pdp_{nombre}.png', dpi=200); plt.close(fig)
         except Exception as e:
             print('PDP no generado:', repr(e))
