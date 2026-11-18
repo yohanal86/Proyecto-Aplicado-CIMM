@@ -1,0 +1,2 @@
+modelo_A,modelo_B,metrica,dif_media,t,gl,p
+Gradient_Boosting,Random_Forest,AP,-0.03066902824873634,-0.29938296790555313,19,0.7678981657986843

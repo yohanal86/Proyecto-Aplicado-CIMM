@@ -1,0 +1,19 @@
+{
+  "Gradient_Boosting": {
+    "best_params": {
+      "learning_rate": 0.1,
+      "max_depth": 7,
+      "n_estimators": 200
+    },
+    "cv_AP": 0.560150397548937,
+    "umbral_F2_interno": 0.72
+  },
+  "Random_Forest": {
+    "best_params": {
+      "max_depth": 7,
+      "n_estimators": 200
+    },
+    "cv_AP": 0.5330789631582507,
+    "umbral_F2_interno": 0.6
+  }
+}
