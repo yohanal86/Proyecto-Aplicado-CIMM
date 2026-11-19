@@ -19,7 +19,7 @@ El modelo es transversal y de carácter asociativo-predictivo: estima asociacion
 | `notebooks/` | Cuaderno de preparación de los datos (Google Colab) y `2_modelado_trazable.py`, que genera las cifras de los capítulos 4 y 5 del documento y 3_figuras.py, que genera las Figuras 3 y 4 en figuras/. |
 | `results/trazable/` | Salidas del script: métricas por pliegue, resumen de modelos, hiperparámetros, importancia por permutación, análisis de robustez y de sensibilidad, y `resultados_para_powerbi.csv`. |
 | `dashboard/` | Tablero de Power BI (`.pbix`), alimentado por `results/trazable/resultados_para_powerbi.csv`. |
-| figuras/ | Figuras 3 y 4 del documento, generadas por notebooks/3_figuras.py. Pueden variar levemente con la versión de scikit-learn. |
+| `figuras/` | Figuras 3 y 4 del documento, generadas por notebooks/3_figuras.py. Pueden variar levemente con la versión de scikit-learn. |
 
 ## Cómo reproducir los resultados
 
