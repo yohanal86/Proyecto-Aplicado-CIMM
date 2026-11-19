@@ -1,0 +1,1 @@
+Figuras 3 y 4 del documento, generadas por notebooks/3_figuras.py.
