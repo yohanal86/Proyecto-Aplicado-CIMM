@@ -14,7 +14,6 @@ from sklearn.compose import ColumnTransformer
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.inspection import partial_dependence
 
 R = 'results/trazable/'
 SALIDA = 'figuras/'
@@ -68,13 +67,23 @@ NOMBRES = {'TOTAL_APRENDICES_MATRICULADOS': 'Aprendices matriculados', 'DURACION
            'MODALIDAD_FORMACION': 'Modalidad de formación'}
 CATEGORIAS = {'CURSO ESPECIAL': 'Curso Especial', 'TECNICO': 'Técnico', 'TECNOLOGO': 'Tecnólogo',
               'PRESENCIAL': 'Presencial', 'VIRTUAL': 'Virtual'}
+def pdp_manual(modelo, X, v, categorica):
+    """Dependencia parcial: probabilidad media predicha al fijar la variable v en cada valor de la rejilla."""
+    if categorica:
+        grid = sorted(X[v].unique())
+    else:
+        u = np.unique(X[v])
+        grid = u if len(u) < 100 else np.linspace(*np.percentile(X[v], [5, 95]), 100)
+    medias = []
+    for g in grid:
+        Xg = X.copy()
+        Xg[v] = g
+        medias.append(modelo.predict_proba(Xg)[:, 1].mean())
+    return np.asarray(grid), np.asarray(medias)
 fig, axs = plt.subplots(2, 3, figsize=(10, 6))
 axs = axs.ravel()
 for ax, v in zip(axs, NUM + CAT):
-    r = partial_dependence(pipe, X, [v], kind='average', response_method='predict_proba',
-                           categorical_features=[v] if v in CAT else None)
-    g = r.get('grid_values', r.get('values'))[0]
-    a = np.asarray(r['average'])[0]
+    g, a = pdp_manual(pipe, X, v, v in CAT)
     if v in CAT:
         ax.bar([CATEGORIAS[str(t)] for t in g], a, color='#1f5f8b', width=.55)
         ax.set_ylim(0, max(a) * 1.35)
